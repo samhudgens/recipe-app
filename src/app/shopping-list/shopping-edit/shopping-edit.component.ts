@@ -22,7 +22,7 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.addEditForm = new FormGroup({
       name: new FormControl('', [Validators.required]),
-      amount: new FormControl('', [Validators.required, Validators.pattern('^[1-9]+[0-9]*$')])
+      amount: new FormControl('', [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)])
     });
 
     this.subscription = this.slService.startedEditing.subscribe(
