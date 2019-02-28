@@ -5,20 +5,25 @@ import { Recipe } from '../recipes/recipe.model';
 import { map } from 'rxjs/operators';
 import { ShoppingListService } from '../shopping-list/shopping-list.service';
 import { Ingredient } from './ingredient.model';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataStorageService {
 
-  constructor(private http: Http, private recipeService: RecipeService, private shoppingListService: ShoppingListService) { }
+  constructor(private http: Http, private recipeService: RecipeService, private shoppingListService: ShoppingListService, private authService: AuthService) { }
 
   storeRecipes() {
-    return this.http.put('https://ng-recipe-book-46810.firebaseio.com/recipes.json', this.recipeService.getRecipes());
+    const token = this.authService.getIdToken();
+
+    return this.http.put('https://ng-recipe-book-46810.firebaseio.com/recipes.json?auth=' + token, this.recipeService.getRecipes());
   }
 
   fetchRecipes() {
-    this.http.get('https://ng-recipe-book-46810.firebaseio.com/recipes.json')
+    const token = this.authService.getIdToken();
+
+    this.http.get('https://ng-recipe-book-46810.firebaseio.com/recipes.json?auth=' + token)
       .pipe(map(
         (response: Response) => {
           const recipes: Recipe[] = response.json();
@@ -38,11 +43,15 @@ export class DataStorageService {
   }
 
   storeIngredients() {
-    return this.http.put('https://ng-recipe-book-46810.firebaseio.com/ingredients.json', this.shoppingListService.getIngredients());
+    const token = this.authService.getIdToken();
+
+    return this.http.put('https://ng-recipe-book-46810.firebaseio.com/ingredients.json?auth=' + token, this.shoppingListService.getIngredients());
   }
 
   fetchIngredients() {
-    this.http.get('https://ng-recipe-book-46810.firebaseio.com/ingredients.json')
+    const token = this.authService.getIdToken();
+
+    this.http.get('https://ng-recipe-book-46810.firebaseio.com/ingredients.json?auth=' + token)
       .pipe(map(
         (response: Response) => {
           const ingredients: Ingredient[] = response.json();

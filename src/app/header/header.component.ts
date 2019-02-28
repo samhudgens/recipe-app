@@ -3,6 +3,7 @@ import { DataStorageService } from '../shared/data-storage.service';
 import { Response } from '@angular/http';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -11,7 +12,7 @@ import { filter } from 'rxjs/operators';
 export class HeaderComponent implements OnInit {
   navEnd: NavigationEnd;
 
-  constructor(private dataStorageServe: DataStorageService, private router: Router) {
+  constructor(private dataStorageServe: DataStorageService, private router: Router, private authService: AuthService) {
 
     this.router.events
     .pipe(
@@ -53,5 +54,9 @@ export class HeaderComponent implements OnInit {
     if(this.navEnd.urlAfterRedirects === "/shopping-list") {
       this.dataStorageServe.fetchIngredients();
     }
+  }
+
+  onLogout() {
+    this.authService.logout();
   }
 }
