@@ -1,9 +1,9 @@
 import { Component, Output, EventEmitter, Input, OnInit } from '@angular/core';
-import { DataStorageService } from '../shared/data-storage.service';
+import { DataStorageService } from '../../shared/data-storage.service';
 import { Response } from '@angular/http';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -12,7 +12,7 @@ import { AuthService } from '../auth/auth.service';
 export class HeaderComponent implements OnInit {
   navEnd: NavigationEnd;
 
-  constructor(private dataStorageServe: DataStorageService, private router: Router, private authService: AuthService) {
+  constructor(private dataStorageServe: DataStorageService, private router: Router, public authService: AuthService) {
 
     this.router.events
     .pipe(
@@ -58,5 +58,9 @@ export class HeaderComponent implements OnInit {
 
   onLogout() {
     this.authService.logout();
+  }
+
+  isAuthenticated() {
+    return this.authService.isAuthenticated();
   }
 }
