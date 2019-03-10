@@ -1,6 +1,6 @@
 import { Component, Output, EventEmitter, Input, OnInit } from '@angular/core';
 import { DataStorageService } from '../../shared/data-storage.service';
-import { Response } from '@angular/http';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../auth/auth.service';
@@ -32,7 +32,11 @@ export class HeaderComponent implements OnInit {
     if(this.navEnd.urlAfterRedirects === "/recipes") {
       this.dataStorageServe.storeRecipes()
       .subscribe(
-        (response: Response) => {
+        // HttpEvent and HttpEventType let us see more about the Http responses and events going on
+        // (response: HttpEvent<Object>) => {
+        //   console.log(response.type === HttpEventType.Response);
+        // }
+        (response) => {
           console.log(response);
         }
       );
@@ -40,7 +44,7 @@ export class HeaderComponent implements OnInit {
     if(this.navEnd.urlAfterRedirects === "/shopping-list") {
       this.dataStorageServe.storeIngredients()
       .subscribe(
-        (response: Response) => {
+        (response) => {
           console.log(response);
         }
       );

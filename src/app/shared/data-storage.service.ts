@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
 import { RecipeService } from '../recipes/recipe.service';
 import { Recipe } from '../recipes/recipe.model';
 import { map } from 'rxjs/operators';
@@ -12,21 +12,36 @@ import { AuthService } from '../auth/auth.service';
 })
 export class DataStorageService {
 
-  constructor(private http: Http, private recipeService: RecipeService, private shoppingListService: ShoppingListService, private authService: AuthService) { }
+  constructor(private httpClient: HttpClient, private recipeService: RecipeService, private shoppingListService: ShoppingListService, private authService: AuthService) { }
 
   storeRecipes() {
-    const token = this.authService.getIdToken();
+    // const token = this.authService.getIdToken();
+    // const headers = new HttpHeaders().set('Authorization', 'Bearer chiebjkoe').append('other stuff', 'other stuff');
 
-    return this.http.put('https://ng-recipe-book-46810.firebaseio.com/recipes.json?auth=' + token, this.recipeService.getRecipes());
+    // return this.httpClient.put('https://ng-recipe-book-46810.firebaseio.com/recipes.json', this.recipeService.getRecipes(), {
+    //   observe: 'body', // could also be 'events' if you want to do stuff after request being sent, received, etc
+    //   // headers: headers
+    //   params: new HttpParams().set('auth', token)
+    // });
+
+    // the HttpRequest object lets us create a request from scratch, rather than with the default configuration from .put
+    // const req = new HttpRequest('PUT', 'https://ng-recipe-book-46810.firebaseio.com/recipes.json', this.recipeService.getRecipes(), {reportProgress: true, params: new HttpParams().set('auth', token)});
+
+    const req = new HttpRequest('PUT', 'https://ng-recipe-book-46810.firebaseio.com/recipes.json', this.recipeService.getRecipes(), {reportProgress: true});
+    return this.httpClient.request(req);
   }
 
   fetchRecipes() {
     const token = this.authService.getIdToken();
 
-    this.http.get('https://ng-recipe-book-46810.firebaseio.com/recipes.json?auth=' + token)
+    // this.httpClient.get<Recipe[]>('https://ng-recipe-book-46810.firebaseio.com/recipes.json?auth=' + token)
+    this.httpClient.get<Recipe[]>('https://ng-recipe-book-46810.firebaseio.com/recipes.json?auth=' + token, {
+      observe: 'body', // 'body' is default, 'response' for full response
+      responseType: 'json' // default is 'json', could also be 'text', blob', 'arraybuffer'
+    })
       .pipe(map(
-        (response: Response) => {
-          const recipes: Recipe[] = response.json();
+        (recipes) => {
+          console.log(recipes);
           for(let recipe of recipes) {
             if(!recipe['ingredients']) {
               recipe['ingredients'] = [];
@@ -45,16 +60,15 @@ export class DataStorageService {
   storeIngredients() {
     const token = this.authService.getIdToken();
 
-    return this.http.put('https://ng-recipe-book-46810.firebaseio.com/ingredients.json?auth=' + token, this.shoppingListService.getIngredients());
+    return this.httpClient.put('https://ng-recipe-book-46810.firebaseio.com/ingredients.json?auth=' + token, this.shoppingListService.getIngredients());
   }
 
   fetchIngredients() {
     const token = this.authService.getIdToken();
 
-    this.http.get('https://ng-recipe-book-46810.firebaseio.com/ingredients.json?auth=' + token)
+    this.httpClient.get<Ingredient[]>('https://ng-recipe-book-46810.firebaseio.com/ingredients.json?auth=' + token)
       .pipe(map(
-        (response: Response) => {
-          const ingredients: Ingredient[] = response.json();
+        (ingredients) => {
           return ingredients;
         }
       ))
