@@ -6,13 +6,14 @@ import { map } from 'rxjs/operators';
 import { ShoppingListService } from '../shopping-list/shopping-list.service';
 import { Ingredient } from './ingredient.model';
 import { AuthService } from '../auth/auth.service';
+import { Store } from '@ngrx/store';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataStorageService {
 
-  constructor(private httpClient: HttpClient, private recipeService: RecipeService, private shoppingListService: ShoppingListService, private authService: AuthService) { }
+  constructor(private httpClient: HttpClient, private recipeService: RecipeService, private shoppingListService: ShoppingListService, private authService: AuthService, private store: Store<{shoppingList: {ingredients: Ingredient[]}}>) { }
 
   storeRecipes() {
     // const token = this.authService.getIdToken();
@@ -62,6 +63,8 @@ export class DataStorageService {
 
     return this.httpClient.put('https://ng-recipe-book-46810.firebaseio.com/ingredients.json?auth=' + token, this.shoppingListService.getIngredients());
   }
+
+  // this.shoppingListService.getIngredients()
 
   fetchIngredients() {
     const token = this.authService.getIdToken();
